@@ -1,7 +1,7 @@
 ﻿'use strict';
 
 function printReceipt(inputs) {
-    let cartItems = getCartItemsByInputs(inputs);
+    let cartItems = getCartItemsByInputs(inputs); 
     if (cartItems === null) {
         return 'ERROR';
     }
@@ -14,12 +14,12 @@ function printReceipt(inputs) {
 
 const getCartItemsByInputs = (inputs) => {
     let cartItems = [];
-    inputs.forEach((barcodeMessage) => {
-        let barcode = getBarcodeFromBarcodeMessage(barcodeMessage);
-        let amount = getAmountFromBarcodeMessage(barcodeMessage);
-        let index = indexOfBarcodeInCartItems(cartItems, barcode);        //获取cartItems中属性值为barcode的item对象的索引
-        if (index === -1) {                      //不存在
-            let item = getItemFromItemsDB(barcode);                       //获取ItemsDB中属性值为barcode的item对象
+    inputs.forEach((barcodeMessage) => {     //使用foreach对所有的商品条码信息进行以下操作
+        let barcode = getBarcodeFromBarcodeMessage(barcodeMessage);     //调用返回barcode的方法，获得当前的barcode
+        let amount = getAmountFromBarcodeMessage(barcodeMessage);        //调用返回数量amount的方法，获得当前的数量baecode
+        let index = indexOfBarcodeInCartItems(cartItems, barcode);        //获取cartItems(对象数组)中属性值为barcode（对象属性）的item（对象）对象的索引
+        if (index === -1) {                      //不存在,下面的代码就是在空数组里面存储对象
+            let item = getItemFromItemsDB(barcode);                       //获取ItemsDB中属性值为barcode的item对象，调用的方法中还调用了获取所有信息的方法
             if (item === null) {                 //inputs 内数据有错
                 return null;
             }
@@ -31,24 +31,24 @@ const getCartItemsByInputs = (inputs) => {
             cartItems[index].totalPrice += cartItems[index].price * amount;
         }
     });
-    return cartItems;
+    return cartItems;  //
 };
 
-const getBarcodeFromBarcodeMessage = (barcodeMessage) => {
-    let indexOfMargin = barcodeMessage.indexOf('-');
-    if (indexOfMargin === -1) {
-        return barcodeMessage;
+const getBarcodeFromBarcodeMessage = (barcodeMessage) => {     //这是一个去除数量并且返回barcode的方法
+    let indexOfMargin = barcodeMessage.indexOf('-');   //查看是否存在字符串-，并返回该字符串的位置，没有则说明不存在-，则返回-1；
+    if (indexOfMargin === -1) {    //判断是否存在数量，没有则返回条码信息
+        return barcodeMessage;  
     }
-    let barcode = barcodeMessage.substring(0, indexOfMargin);
+    let barcode = barcodeMessage.substring(0, indexOfMargin);    //去除数字后面的-加数量，仅返回条码
     return barcode;
 }
 
-const getAmountFromBarcodeMessage = (barcodeMessage) => {
-    let indexofMargin = barcodeMessage.indexOf('-');
+const getAmountFromBarcodeMessage = (barcodeMessage) => {    //这是一个去除barcode返回数量的方法
+    let indexofMargin = barcodeMessage.indexOf('-');    //查看是否存在字符串-，并返回该字符串的位置，没有则说明不存在-，则返回-1；
     if (indexofMargin === -1) {
-        return 1;
+        return 1;                            //如果没有该字符串，则说明该商品数量为1，所以返回1
     }
-    let amount = parseFloat(barcodeMessage.substring(indexofMargin + 1));
+    let amount = parseFloat(barcodeMessage.substring(indexofMargin + 1));  //parseFloat函数的作用是解析一个字符串并且返回一个浮点数字
     return amount;
 }
 
